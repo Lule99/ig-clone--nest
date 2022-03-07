@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpCode, Post, Put } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Post, Put } from '@nestjs/common';
 import { PostService } from './post.service';
 
 @Controller('api/post')
@@ -24,19 +24,19 @@ export class PostController {
     }
 
     @Delete('/:id')
-    @HttpCode(202)
+    @HttpCode(HttpStatus.ACCEPTED)
     deletePost(){
         return 'deletePost'
     }
 
     @Post('')
-    @HttpCode(201)
+    @HttpCode(HttpStatus.CREATED)
     publishPost(){
         return 'publishPost'
     }
     
     @Put('')
-    @HttpCode(201)
+    @HttpCode(HttpStatus.ACCEPTED)
     updatePost(){
         return 'updatePost'
     }

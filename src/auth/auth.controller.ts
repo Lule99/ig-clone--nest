@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { AuthDto, LoginDto } from './dto';
-import { Request } from 'express'
+import { JwtGuard } from './guard';
+import { GetUser } from './decorator';
+import { User } from '@prisma/client';
 
 @Controller('api/auth')
 export class AuthController {
@@ -22,10 +23,10 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtGuard)
   @Get('test')
-  test(@Req() req : Request) {
-    const userPayload : any = req.user
-      return `Guard Works! User:${userPayload.sub}`
+  test(@GetUser() user : User) {
+    return `GuardWorks:${user.email}`
+      
   }
 }

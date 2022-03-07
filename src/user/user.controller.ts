@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Post, Put } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Post, Put } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UserService } from './user.service';
 
@@ -11,20 +11,21 @@ export class UserController {
     ){}
 
     @Post('change-password')
-    @HttpCode(204)
+    @HttpCode(HttpStatus.ACCEPTED)
     changePassword()
     {
         return 'changePassword'
     }
 
     @Post('reset-password')
-    @HttpCode(204)
+    @HttpCode(HttpStatus.ACCEPTED)
     resetPassword()
     {
         return 'resetPassword'
     }
 
     @Post('change-password-token')
+    @HttpCode(HttpStatus.ACCEPTED)
     changePasswordWithToken()
     {
         return 'changePasswordWithToken'
@@ -49,20 +50,21 @@ export class UserController {
     }
 
     @Put()
+    @HttpCode(HttpStatus.ACCEPTED)
     updateUser()
     {
         return 'updateUser'
     }
     
     @Post('follow')
-    @HttpCode(204)
+    @HttpCode(HttpStatus.ACCEPTED)
     followUser()
     {
         return 'follow'
     }
 
     @Post('unfollow')
-    @HttpCode(204)
+    @HttpCode(HttpStatus.ACCEPTED)
     unfollowUser()
     {
         return 'unfollow'
