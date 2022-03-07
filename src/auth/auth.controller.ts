@@ -25,8 +25,7 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @Get('test')
-  test(@GetUser() user : User) {
-    return `GuardWorks:${user.email}`
-      
+  test(@GetUser() user: User) {
+    return `GuardWorks:${user.email}`;
   }
 }

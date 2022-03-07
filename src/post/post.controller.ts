@@ -1,5 +1,5 @@
 import {
-    Body,
+  Body,
   Controller,
   Delete,
   Get,
@@ -24,11 +24,7 @@ export class PostController {
   constructor(private postService: PostService) {}
 
   @Get('feed')
-  getFeed(
-      @GetUser() user: User,
-      page: number, 
-      size: number
-      ) {
+  getFeed(@GetUser() user: User, page: number, size: number) {
     return 'feedForUser|' + user.username;
   }
 
@@ -36,37 +32,31 @@ export class PostController {
   getUserPosts(
     @Query('username') username: string,
     page: number,
-    size: number
-    ) {
-    return 'user-posts for user '+username;
+    size: number,
+  ) {
+    return 'user-posts for user ' + username;
   }
 
   @Get('/:id')
   getOnePost(@Param('id') id: number) {
-    return 'onePost with id'+id;
+    return 'onePost with id' + id;
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.ACCEPTED)
   deletePost(@Param('id') id: number) {
-    return 'deletePost with id '+id;
+    return 'deletePost with id ' + id;
   }
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  publishPost(
-    @GetUser() user : User,
-    @Body() dto : NewPostDto
-  ) {
-    return 'publishPost with text'+dto.message;
+  publishPost(@GetUser() user: User, @Body() dto: NewPostDto) {
+    return 'publishPost with text' + dto.message;
   }
 
   @Put('')
   @HttpCode(HttpStatus.ACCEPTED)
-  updatePost(
-    @GetUser() user : User,
-    @Body() dto: UpdatePostDto
-  ) {
-    return 'updatePost with id'+dto.postToUpdateId;
+  updatePost(@GetUser() user: User, @Body() dto: UpdatePostDto) {
+    return 'updatePost with id' + dto.postToUpdateId;
   }
 }

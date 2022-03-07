@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
@@ -9,48 +17,41 @@ import { NewCommentDto } from './dto';
 @Controller('api/comment')
 @UseGuards(JwtGuard)
 export class CommentController {
-    constructor(
-        private commentService : CommentService,
-        private postService : PostService
-        ){}
+  constructor(
+    private commentService: CommentService,
+    private postService: PostService,
+  ) {}
 
-    @Get()
-    getCommentsForPost(
-        @Query('postId') postId:number,
-        @Query('page') page:number,
-        @Query('size') size:number,
-    ){
-        return 'getCommentsForPost with id: ' + postId
-    }
+  @Get()
+  getCommentsForPost(
+    @Query('postId') postId: number,
+    @Query('page') page: number,
+    @Query('size') size: number,
+  ) {
+    return 'getCommentsForPost with id: ' + postId;
+  }
 
-    @Get('/comment')
-    getCommentsForComment(
-        @Query('commentId') commentId:number,
-        @Query('page') page:number,
-        @Query('size') size:number,
-    ){
-        return 'getCommentsForComment with id: ' + commentId
-    }
+  @Get('/comment')
+  getCommentsForComment(
+    @Query('commentId') commentId: number,
+    @Query('page') page: number,
+    @Query('size') size: number,
+  ) {
+    return 'getCommentsForComment with id: ' + commentId;
+  }
 
-    @Get('/get-one/:id')
-    getOneComment(@Param('id') id : number){
-        return 'getOneComment with id: ' + id
-    }
+  @Get('/get-one/:id')
+  getOneComment(@Param('id') id: number) {
+    return 'getOneComment with id: ' + id;
+  }
 
-    @Post('publish-on-post')
-    publishCommentOnPost(
-        @GetUser() user: User,
-        @Body() dto : NewCommentDto
-    ){
-        return 'publishCommentOnPost:\ntext: '+dto.text
-    }
+  @Post('publish-on-post')
+  publishCommentOnPost(@GetUser() user: User, @Body() dto: NewCommentDto) {
+    return 'publishCommentOnPost:\ntext: ' + dto.text;
+  }
 
-    @Post('publish-on-comment')
-    publishCommentOnComment(
-        @GetUser() user: User,
-        @Body() dto : NewCommentDto
-    ){
-        return 'publishCommentOnComment:\ntext: '+dto.text
-    }
-
+  @Post('publish-on-comment')
+  publishCommentOnComment(@GetUser() user: User, @Body() dto: NewCommentDto) {
+    return 'publishCommentOnComment:\ntext: ' + dto.text;
+  }
 }

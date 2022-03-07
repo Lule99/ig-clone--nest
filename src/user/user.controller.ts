@@ -26,56 +26,47 @@ export class UserController {
   @Post('change-password')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
-  changePassword(
-        @GetUser() user: User,
-        @Body() dto: ChangePasswordDto) {
+  changePassword(@GetUser() user: User, @Body() dto: ChangePasswordDto) {
     return 'changePassword';
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.ACCEPTED)
-  resetPassword(
-        @Query('email') email: string) {
+  resetPassword(@Query('email') email: string) {
     //TODO
     return email;
   }
 
   @Post('change-password-token')
   @HttpCode(HttpStatus.ACCEPTED)
-  changePasswordWithToken(
-        @Query('token') token: string) {
+  changePasswordWithToken(@Query('token') token: string) {
     return token;
   }
 
   @Get()
-  searchUser(
-        @Query('query') query: string) {
+  searchUser(@Query('query') query: string) {
     return query;
   }
 
   @Get('profile-info')
   @UseGuards(JwtGuard)
-  getProfileInfo(
-        @GetUser() user: User, 
-        @Query('username') username: string) {
+  getProfileInfo(@GetUser() user: User, @Query('username') username: string) {
     return username;
   }
 
   @Get('follow-check')
   @UseGuards(JwtGuard)
   checkIfUserFollowsUser(
-        @Query('username') username: string,
-        @Query('followedUsername') followedUsername: string,
+    @Query('username') username: string,
+    @Query('followedUsername') followedUsername: string,
   ) {
-    return username+'|'+followedUsername;
+    return username + '|' + followedUsername;
   }
 
   @Put()
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
-  updateUser(
-        @GetUser() user: User, 
-        @Body() dto: UpdateUserDto) {
+  updateUser(@GetUser() user: User, @Body() dto: UpdateUserDto) {
     return 'updateUser';
   }
 
@@ -83,17 +74,19 @@ export class UserController {
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
   followUser(
-        @GetUser() user: User, 
-        @Query("otherUsername") otherUsername :string) {
-    return 'follow '+otherUsername;
+    @GetUser() user: User,
+    @Query('otherUsername') otherUsername: string,
+  ) {
+    return 'follow ' + otherUsername;
   }
 
   @Post('unfollow')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
   unfollowUser(
-        @GetUser() user: User, 
-        @Query("otherUsername") otherUsername :string) {
-    return 'unfollow '+otherUsername;
+    @GetUser() user: User,
+    @Query('otherUsername') otherUsername: string,
+  ) {
+    return 'unfollow ' + otherUsername;
   }
 }
