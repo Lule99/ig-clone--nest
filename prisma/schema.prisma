@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  username  String  @unique
+  email     String  @unique
+  password  String
+  role      Role @default(REGULAR_USER)
+  firstName String?
+  lastName  String?
+
+  profile Profile?
+
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name          String
+  bio           String?
+  profilePiture String?
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+
+  followedBy Profile[] @relation("ProfileFollows", references: [id])
+  following  Profile[] @relation("ProfileFollows", references: [id])
+  posts      Post[]
+  comments   Comment[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  picture String  @default("default_picture_path")
+  text    String? @default("")
+
+
+  publisherId Int
+  publisher   Profile    @relation(fields: [publisherId], references: [id])
+  comments    Comment[]
+  reactions   Reaction[]
+
+}
+
+model Reaction {
+  id        Int      @id @default(autoincrement())
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  kind ReactionKind
+  type ReactionType
+
+  postId    Int?
+  post      Post?    @relation(fields: [postId], references: [id])
+  commentId Int?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+
+
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commentText String
+
+  profileId       Int
+  profile         Profile    @relation(fields: [profileId], references: [id])
+  postId          Int
+  post            Post       @relation(fields: [postId], references: [id])
+  reactions       Reaction[]
+  parentCommentId Int?
+  parentComment   Comment?   @relation("ParentComment", fields: [parentCommentId], references: [id])
+  childComments   Comment[]  @relation("ParentComment")
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+  LAUGH
+  ANGRY
+  SAD
+}
+
+enum Role {
+  REGULAR_USER
+}
+
+enum ReactionKind {
+  POST_REACTION
+  COMMENT_REACTION
+}
