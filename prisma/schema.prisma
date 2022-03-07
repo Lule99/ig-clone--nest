@@ -21,8 +21,6 @@ model User {
   password  String
   salt      String  @default("")
   role      Role    @default(REGULAR_USER)
-  firstName String?
-  lastName  String?
 
   profile Profile?
 

@@ -7,6 +7,7 @@ import { PostModule } from './post/post.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { CommentModule } from './comment/comment.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ImagesModule } from './images/images.module';
 
 
 @Module({
@@ -17,7 +18,8 @@ import { PrismaModule } from './prisma/prisma.module';
     ReactionModule,
     CommentModule,
     PrismaModule,
-    ConfigModule.forRoot({isGlobal:true}),    //kao @Global...
+    ConfigModule.forRoot({isGlobal:true}),
+    ImagesModule,    //kao @Global...
   ],
   controllers: [],
   providers: [],
