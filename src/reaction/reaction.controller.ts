@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Profile } from '@prisma/client';
 import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { ReactionDto, RemoveReactionDto } from './dto';
@@ -21,25 +21,26 @@ export class ReactionController {
   constructor(private reactionService: ReactionService) {}
 
   @HttpCode(HttpStatus.CREATED)
-  @Post('add-comment-reaction')
-  addCommentReaction(@GetProfile() user: User, @Body() dto: ReactionDto) {
+  @Post('toggle-comment-reaction')
+  toggleCommentReaction(@GetProfile() profile: Profile, @Body() dto: ReactionDto) {
+    this.reactionService.toggleCommentReaction(profile, dto)
     return 'addCommentReaction with id ' + dto.entityId;
   }
 
-  @HttpCode(HttpStatus.ACCEPTED)
-  @Delete('remove-comment-reaction')
-  removeCommentReaction(@GetProfile() user: User, @Body() dto: RemoveReactionDto) {
-    return 'removeCommentReaction with id ' + dto.id;
+  @Get('/:id')
+  getMyCommentReaction(@GetProfile() profile: Profile, @Param('id') id: number) {
+    return this.reactionService.getMyCommentReaction(profile, id);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('toggle-post-reaction')
-  togglePostReaction(@GetProfile() user: User, @Body() dto: ReactionDto) {
+  togglePostReaction(@GetProfile() profile: Profile, @Body() dto: ReactionDto) {
+    this.reactionService.togglePostReaction(profile, dto)
     return 'togglePostReaction with id ' + dto.entityId;
   }
 
   @Get('/:id')
-  myPostReaction(@GetProfile() user: User, @Param('id') id: number) {
-    return 'myPostReaction user: ' + user.username;
+  getMyPostReaction(@GetProfile() profile: Profile, @Param('id') id: number) {
+    return this.reactionService.getMyPostReaction(profile, id);
   }
 }
