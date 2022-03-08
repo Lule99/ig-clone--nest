@@ -35,37 +35,32 @@ export class PostController {
   @Get('user-posts')
   getUserPosts(
     @Query('username') username: string,
-    page: number,
-    size: number,
+    @Query('page') page: number,
+    @Query('size') size: number,
   ) {
-    this.postService.getUserPosts(username, page, size);
-    return 'user-posts for user ' + username;
+    return this.postService.getUserPosts(username, page, size);
   }
 
   @Get('/:id')
   getOnePost(@Param('id') id: number) {
-    this.postService.getOnePost(id);
-    return 'onePost with id' + id;
+    return this.postService.getOnePost(id);
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.ACCEPTED)
-  deletePost(@Param('id') id: number) {
-    this.postService.deletePost(id);
-    return 'deletePost with id ' + id;
+  deletePost(@GetProfile() profile: Profile, @Param('id') id: number) {
+    return this.postService.deletePost(profile, id);
   }
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   publishPost(@GetProfile() profile: Profile, @Body() dto: NewPostDto) {
-    this.postService.publishPost(profile, dto);
-    return 'publishPost with text' + dto.message;
+    return this.postService.publishPost(profile, dto);
   }
 
   @Put('')
   @HttpCode(HttpStatus.ACCEPTED)
   updatePost(@GetProfile() profile: Profile, @Body() dto: UpdatePostDto) {
-    this.postService.updatePost(profile, dto);
-    return 'updatePost with id' + dto.postToUpdateId;
+    return this.postService.updatePost(profile, dto);
   }
 }
