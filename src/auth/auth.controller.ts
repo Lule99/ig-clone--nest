@@ -3,8 +3,8 @@ import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { AuthDto, LoginDto } from './dto';
 import { JwtGuard } from './guard';
-import { GetUser } from './decorator';
-import { User } from '@prisma/client';
+import { GetProfile } from './decorator';
+import { Profile, User } from '@prisma/client';
 
 @Controller('api/auth')
 export class AuthController {
@@ -25,7 +25,7 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @Get('test')
-  test(@GetUser() user: User) {
-    return `GuardWorks:${user.email}`;
+  test(@GetProfile() profile: Profile) {
+    return `GuardWorks:${profile.bio}`;
   }
 }

@@ -9,8 +9,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { GetUser } from 'src/auth/decorator';
+import { Profile, User } from '@prisma/client';
+import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { ChangePasswordDto, UpdateUserDto } from './dto';
 import { ProfileService } from './profile.service';
@@ -26,7 +26,7 @@ export class UserController {
   @Post('change-password')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
-  changePassword(@GetUser() user: User, @Body() dto: ChangePasswordDto) {
+  changePassword(@GetProfile() user: User, @Body() dto: ChangePasswordDto) {
     return 'changePassword';
   }
 
@@ -45,13 +45,13 @@ export class UserController {
 
   @Get()
   searchUser(@Query('query') query: string) {
-    return query;
+    return this.profileService.search(query);
   }
 
   @Get('profile-info')
   @UseGuards(JwtGuard)
-  getProfileInfo(@GetUser() user: User, @Query('username') username: string) {
-    return username;
+  getProfileInfo(@Query('username') username: string) {
+    return this.profileService.getProfileInfo(username);
   }
 
   @Get('follow-check')
@@ -60,33 +60,35 @@ export class UserController {
     @Query('username') username: string,
     @Query('followedUsername') followedUsername: string,
   ) {
-    return username + '|' + followedUsername;
+    
+    return this.profileService.followCheck(username, followedUsername);
   }
 
   @Put()
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
-  updateUser(@GetUser() user: User, @Body() dto: UpdateUserDto) {
-    return 'updateUser';
+  updateUser(@GetProfile() user: User, @Body() dto: UpdateUserDto) {
+    return this.profileService.updateUser(user, dto);
   }
 
   @Post('follow')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
   followUser(
-    @GetUser() user: User,
+    @GetProfile() profile: Profile,
     @Query('otherUsername') otherUsername: string,
   ) {
-    return 'follow ' + otherUsername;
+    
+    return this.profileService.follow(profile, otherUsername);
   }
 
   @Post('unfollow')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
   unfollowUser(
-    @GetUser() user: User,
+    @GetProfile() profile: Profile,
     @Query('otherUsername') otherUsername: string,
   ) {
-    return 'unfollow ' + otherUsername;
+    this.profileService.unfollow(profile, otherUsername)
   }
 }

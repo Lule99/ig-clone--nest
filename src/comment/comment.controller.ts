@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { GetUser } from 'src/auth/decorator';
+import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { PostService } from 'src/post/post.service';
 import { CommentService } from './comment.service';
@@ -46,12 +46,12 @@ export class CommentController {
   }
 
   @Post('publish-on-post')
-  publishCommentOnPost(@GetUser() user: User, @Body() dto: NewCommentDto) {
+  publishCommentOnPost(@GetProfile() user: User, @Body() dto: NewCommentDto) {
     return 'publishCommentOnPost:\ntext: ' + dto.text;
   }
 
   @Post('publish-on-comment')
-  publishCommentOnComment(@GetUser() user: User, @Body() dto: NewCommentDto) {
+  publishCommentOnComment(@GetProfile() user: User, @Body() dto: NewCommentDto) {
     return 'publishCommentOnComment:\ntext: ' + dto.text;
   }
 }

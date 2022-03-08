@@ -6,7 +6,6 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { generateSalt } from './salt';
-import { connect } from 'http2';
 import { ImagesService } from 'src/images/images.service';
 
 @Injectable()
@@ -28,6 +27,7 @@ export class AuthService {
       throw new ForbiddenException(`Password1 and Password2 dont match.`);
 
     try {
+      /////////////////////////////////////////////////////////////////////////////POOOSTTTTTTTT!!!
       const user = await this.prisma.user.create({
         data: {
           username: dto.username,
@@ -38,7 +38,12 @@ export class AuthService {
               create: {
                 name:dto.name,
                 bio:dto.bio,
-                profilePiture:"pathDoSlike"
+                profilePiture:"pathDoSlike",
+                posts: {
+                  create: {
+                    text: 'prvi post'
+                  }
+                }
               }
           }
         },
