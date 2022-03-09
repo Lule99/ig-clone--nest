@@ -1,5 +1,5 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { generateProfilePicturePath } from 'src/utils/generators';
+import { generateProfilePicturePath } from 'src/helpers/utils/generators';
 import { writeFile } from 'fs'
 
 @Injectable()
