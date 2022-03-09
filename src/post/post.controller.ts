@@ -16,6 +16,7 @@ import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { NewPostDto } from './dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { ProcessPostImagePipe } from './pipes/process-post-image.pipe';
 import { PostService } from './post.service';
 
 @Controller('api/post')
@@ -54,13 +55,14 @@ export class PostController {
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  publishPost(@GetProfile() profile: Profile, @Body() dto: NewPostDto) {
+  publishPost(@GetProfile() profile: Profile, @Body(ProcessPostImagePipe) dto: NewPostDto) {
+    console.trace(dto)
     return this.postService.publishPost(profile, dto);
   }
 
   @Put('')
   @HttpCode(HttpStatus.ACCEPTED)
-  updatePost(@GetProfile() profile: Profile, @Body() dto: UpdatePostDto) {
+  updatePost(@GetProfile() profile: Profile, @Body(ProcessPostImagePipe) dto: UpdatePostDto) {
     return this.postService.updatePost(profile, dto);
   }
 }

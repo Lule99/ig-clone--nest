@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { ConfigService } from '@nestjs/config'
-import Constants from 'src/constants';
+import Constants from 'src/utils/constants';
 
 @Injectable()
 export class PrismaService extends PrismaClient {

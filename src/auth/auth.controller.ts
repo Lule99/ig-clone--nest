@@ -5,6 +5,7 @@ import { AuthDto, LoginDto } from './dto';
 import { JwtGuard } from './guard';
 import { GetProfile } from './decorator';
 import { Profile, User } from '@prisma/client';
+import { ProcessProfileImagePipe } from './pipes/process-profile-image.pipe';
 
 @Controller('api/auth')
 export class AuthController {
@@ -19,7 +20,7 @@ export class AuthController {
   }
 
   @Post('/register')
-  register(@Body() dto: AuthDto) {
+  register(@Body(ProcessProfileImagePipe) dto: AuthDto) {
     return this.authService.register(dto);
   }
 

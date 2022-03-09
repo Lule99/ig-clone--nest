@@ -33,21 +33,19 @@ export class PostService {
   }
 
   async publishPost(profile: Profile, dto: NewPostDto) {
-    await this.prisma.profile.update({
-      where: {
-        id: profile.id,
-      },
-      data: {
-        posts: {
-          create: {
-            text: dto.message,
-            picture: dto.picture,
-          },
-        },
-      },
-    });
-  }
+    return await this.prisma.post.create({
+        data:{
+          text: dto.message,
+          picture: dto.picture,
+          publisher: {
+            connect: {
+              id: profile.id
+            }
+          }
+        }
+    })
 
+  }
   async deletePost(profile: Profile, id: number) {
     
     try{
