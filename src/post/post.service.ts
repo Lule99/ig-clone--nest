@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Post, Profile } from '@prisma/client';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { Post, Profile, User } from '@prisma/client';
+import { NewCommentDto } from 'src/comment/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NewPostDto, UpdatePostDto } from './dto';
 
@@ -45,6 +46,7 @@ export class PostService {
       },
     });
   }
+
   async deletePost(profile: Profile, id: number) {
     try {
       await this.prisma.profile.update({
@@ -151,5 +153,47 @@ export class PostService {
     if (!profile) throw new BadRequestException('No profile found');
 
     return profile;
+  }
+
+  async publishComment(profile: Profile, dto: NewCommentDto) {
+    
+    if(!this.profileAllowedToSee(profile, dto.commentedEntityId))
+        throw new ForbiddenException("Not allowed to publish! You dont follow this.")
+
+    return await this.prisma.comment.create({
+      data:{
+        commentText:dto.text,
+        post: {
+          connect:{
+            id: dto.commentedEntityId
+          }
+        },
+        profile:{
+          connect:{
+            id: profile.id
+          }
+        }
+      }
+    })
+  }
+
+  async profileAllowedToSee(profile: Profile, id: number) {
+    const followingList : Profile[] = await this.prisma.profile.findFirst({
+      where:{
+        id:profile.id
+      },
+    }).following()
+
+    return !! await this.prisma.post.findFirst({
+      where:{
+        AND:[{
+          id: id
+        },{
+          publisherId: {
+            in: followingList.map(p => p.id)
+          }
+        }]
+      }
+    })
   }
 }
