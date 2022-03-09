@@ -16,11 +16,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  username  String  @unique
-  email     String  @unique
-  password  String
-  salt      String  @default("")
-  role      Role    @default(REGULAR_USER)
+  username String @unique
+  email    String @unique
+  password String
+  salt     String @default("")
+  role     Role   @default(REGULAR_USER)
 
   profile Profile?
 
@@ -40,10 +40,11 @@ model Profile {
   user   User @relation(fields: [userId], references: [id])
 
 
-  followedBy Profile[] @relation("ProfileFollows", references: [id])
-  following  Profile[] @relation("ProfileFollows", references: [id])
+  followedBy Profile[]  @relation("ProfileFollows", references: [id])
+  following  Profile[]  @relation("ProfileFollows", references: [id])
   posts      Post[]
   comments   Comment[]
+  reactions  Reaction[]
 }
 
 model Post {
@@ -76,8 +77,8 @@ model Reaction {
   post      Post?    @relation(fields: [postId], references: [id])
   commentId Int?
   comment   Comment? @relation(fields: [commentId], references: [id])
-
-
+  profileId Int?
+  profile   Profile? @relation(fields: [profileId], references: [id])
 }
 
 model Comment {
