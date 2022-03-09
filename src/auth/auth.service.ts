@@ -5,29 +5,24 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { generateSalt } from './salt';
-import { ImagesService } from 'src/images/images.service';
+import { generateStringHash } from 'src/utils/generators';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private imageService: ImagesService,
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
   ) {}
 
   async register(dto: AuthDto) {
-    const salt = generateSalt(8);
+    const salt = generateStringHash(8);
     const pswHash = await argon.hash(dto.password + salt);
-
-    const bla = this.imageService.uploadImage(dto.profilePicture, 1, 'user');
     
     if(dto.password !== dto.repeatedPassword)
       throw new ForbiddenException(`Password1 and Password2 dont match.`);
 
     try {
-      /////////////////////////////////////////////////////////////////////////////POOOSTTTTTTTT!!!
       const user = await this.prisma.user.create({
         data: {
           username: dto.username,
@@ -38,12 +33,7 @@ export class AuthService {
               create: {
                 name:dto.name,
                 bio:dto.bio,
-                profilePiture:"pathDoSlike",
-                posts: {
-                  create: {
-                    text: 'prvi post'
-                  }
-                }
+                profilePiture:dto.profilePicture,
               }
           }
         },
