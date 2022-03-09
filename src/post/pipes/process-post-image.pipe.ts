@@ -1,5 +1,5 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { generatePostPath } from 'src/utils/generators';
+import { generatePostPath } from 'src/helpers/utils/generators';
 import { writeFile } from 'fs'
 
 @Injectable()

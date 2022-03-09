@@ -30,19 +30,6 @@ export class UserController {
     return 'changePassword';
   }
 
-  @Post('reset-password')
-  @HttpCode(HttpStatus.ACCEPTED)
-  resetPassword(@Query('email') email: string) {
-    //TODO
-    return email;
-  }
-
-  @Post('change-password-token')
-  @HttpCode(HttpStatus.ACCEPTED)
-  changePasswordWithToken(@Query('token') token: string) {
-    return token;
-  }
-
   @Get()
   searchUser(@Query('query') query: string) {
     return this.profileService.search(query);

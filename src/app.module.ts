@@ -7,6 +7,7 @@ import { PostModule } from './post/post.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { CommentModule } from './comment/comment.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { MailModule } from './helpers/mail/mail.module';
 
 
 @Module({
@@ -17,6 +18,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ReactionModule,
     CommentModule,
     PrismaModule,
+    MailModule,
     ConfigModule.forRoot({isGlobal:true}),
   ],
   controllers: [],
