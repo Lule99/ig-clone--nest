@@ -11,11 +11,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { GetUser } from 'src/auth/decorator';
+import { Profile, User } from '@prisma/client';
+import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { NewPostDto } from './dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { ProcessPostImagePipe } from './pipes/process-post-image.pipe';
 import { PostService } from './post.service';
 
 @Controller('api/post')
@@ -24,39 +25,44 @@ export class PostController {
   constructor(private postService: PostService) {}
 
   @Get('feed')
-  getFeed(@GetUser() user: User, page: number, size: number) {
-    return 'feedForUser|' + user.username;
+  getFeed(
+    @GetProfile() profile: Profile,
+    @Query('page') page: number,
+    @Query('size') size: number) {
+    
+    return this.postService.getFeed(profile, page, size);
   }
 
   @Get('user-posts')
   getUserPosts(
     @Query('username') username: string,
-    page: number,
-    size: number,
+    @Query('page') page: number,
+    @Query('size') size: number,
   ) {
-    return 'user-posts for user ' + username;
+    return this.postService.getUserPosts(username, page, size);
   }
 
   @Get('/:id')
   getOnePost(@Param('id') id: number) {
-    return 'onePost with id' + id;
+    return this.postService.getOnePost(id);
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.ACCEPTED)
-  deletePost(@Param('id') id: number) {
-    return 'deletePost with id ' + id;
+  deletePost(@GetProfile() profile: Profile, @Param('id') id: number) {
+    return this.postService.deletePost(profile, id);
   }
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  publishPost(@GetUser() user: User, @Body() dto: NewPostDto) {
-    return 'publishPost with text' + dto.message;
+  publishPost(@GetProfile() profile: Profile, @Body(ProcessPostImagePipe) dto: NewPostDto) {
+    console.trace(dto)
+    return this.postService.publishPost(profile, dto);
   }
 
   @Put('')
   @HttpCode(HttpStatus.ACCEPTED)
-  updatePost(@GetUser() user: User, @Body() dto: UpdatePostDto) {
-    return 'updatePost with id' + dto.postToUpdateId;
+  updatePost(@GetProfile() profile: Profile, @Body(ProcessPostImagePipe) dto: UpdatePostDto) {
+    return this.postService.updatePost(profile, dto);
   }
 }

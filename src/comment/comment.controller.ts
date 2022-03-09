@@ -7,8 +7,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { GetUser } from 'src/auth/decorator';
+import { Profile, User } from '@prisma/client';
+import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { PostService } from 'src/post/post.service';
 import { CommentService } from './comment.service';
@@ -24,34 +24,37 @@ export class CommentController {
 
   @Get()
   getCommentsForPost(
+    @GetProfile() profile: Profile,
     @Query('postId') postId: number,
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
-    return 'getCommentsForPost with id: ' + postId;
+    return this.commentService.getAllForPost(profile, postId, page, size);
   }
 
   @Get('/comment')
   getCommentsForComment(
+    @GetProfile() profile: Profile,
     @Query('commentId') commentId: number,
     @Query('page') page: number,
     @Query('size') size: number,
   ) {
-    return 'getCommentsForComment with id: ' + commentId;
+    return this.commentService.getAllForComment(profile, commentId, page, size);
   }
 
   @Get('/get-one/:id')
-  getOneComment(@Param('id') id: number) {
-    return 'getOneComment with id: ' + id;
+  getOneComment(@GetProfile() profile: Profile, @Param('id') id: number) {
+    return this.commentService.getOne(profile,id);
   }
 
   @Post('publish-on-post')
-  publishCommentOnPost(@GetUser() user: User, @Body() dto: NewCommentDto) {
-    return 'publishCommentOnPost:\ntext: ' + dto.text;
+  publishCommentOnPost(@GetProfile() profile: Profile, @Body() dto: NewCommentDto) {
+    return this.postService.publishComment(profile, dto);
   }
 
   @Post('publish-on-comment')
-  publishCommentOnComment(@GetUser() user: User, @Body() dto: NewCommentDto) {
-    return 'publishCommentOnComment:\ntext: ' + dto.text;
+  publishCommentOnComment(@GetProfile() profile: Profile, @Body() dto: NewCommentDto) {
+    return this.commentService.publish(profile, dto);
+
   }
 }

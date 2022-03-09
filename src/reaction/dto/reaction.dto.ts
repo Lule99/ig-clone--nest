@@ -1,3 +1,4 @@
+import { ReactionType } from '@prisma/client';
 import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
 
 export class ReactionDto {
@@ -7,5 +8,5 @@ export class ReactionDto {
   entityId: number;
   @IsNotEmpty()
   @IsString()
-  reactionType: string;
+  reactionType: ReactionType;
 }

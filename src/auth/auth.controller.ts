@@ -1,16 +1,30 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { AuthDto, LoginDto } from './dto';
-import { JwtGuard } from './guard';
-import { GetUser } from './decorator';
-import { User } from '@prisma/client';
+import { AuthDto, LoginDto, ResetPasswordDto } from './dto';
+import { JwtGuard, ResetPassword } from './guard';
+import { GetProfile, GetUser } from './decorator';
+import { Profile, User } from '@prisma/client';
+import { ProcessProfileImagePipe } from './pipes/process-profile-image.pipe';
+import { MailService } from 'src/helpers/mail/mail.service';
+import { ProcessResetTokenPipe } from './pipes/process-reset-token.pipe';
 
 @Controller('api/auth')
 export class AuthController {
   constructor(
     private userService: UserService,
     private authService: AuthService,
+    private mailService: MailService,
   ) {}
 
   @Post('/login')
@@ -19,13 +33,24 @@ export class AuthController {
   }
 
   @Post('/register')
-  register(@Body() dto: AuthDto) {
+  register(@Body(ProcessProfileImagePipe) dto: AuthDto) {
     return this.authService.register(dto);
   }
 
-  @UseGuards(JwtGuard)
-  @Get('test')
-  test(@GetUser() user: User) {
-    return `GuardWorks:${user.email}`;
+  @Get('reset-password')
+  @HttpCode(HttpStatus.ACCEPTED)
+  resetPassword(@Query('email') email: string) {
+    this.authService.initializePasswordReset(email);
+    return 'Email successfully generated';
   }
+
+  @Post('change-password-token')
+  @HttpCode(HttpStatus.ACCEPTED)
+  changePasswordWithToken(
+    @Query('token', ProcessResetTokenPipe) user: User,
+    @Body() dto: ResetPasswordDto,
+  ) {
+    return this.authService.resetPassword(user, dto);
+  }
+
 }
