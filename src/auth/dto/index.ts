@@ -1,3 +1,3 @@
-//barrel export pattern
-export * from './auth.dto';
+export * from './auth.dto'
 export * from './login.dto'
+export * from './reset-password.dto'

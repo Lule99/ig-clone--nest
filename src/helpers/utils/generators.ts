@@ -1,7 +1,6 @@
-import { ServiceUnavailableException } from "@nestjs/common";
-import Constants from "src/helpers/utils/constants";
-import { existsSync } from 'fs'
-
+import { ServiceUnavailableException } from '@nestjs/common';
+import Constants from 'src/helpers/utils/constants';
+import { existsSync } from 'fs';
 
 export const generateStringHash = (n: number) => {
   let res = '';

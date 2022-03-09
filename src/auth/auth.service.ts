@@ -1,5 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { AuthDto, LoginDto } from './dto';
+import { AuthDto, LoginDto, ResetPasswordDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
@@ -8,10 +8,10 @@ import { ConfigService } from '@nestjs/config';
 import { generateStringHash } from 'src/helpers/utils/generators';
 import { MailService } from 'src/helpers/mail/mail.service';
 import Constants from 'src/helpers/utils/constants';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
-
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
@@ -56,9 +56,7 @@ export class AuthService {
       }
     }
   }
-
-
-  
+ 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -75,8 +73,6 @@ export class AuthService {
     if (!passwordCheck) throw new ForbiddenException('Invalid credentials!');
     return await this.signToken(user.username);
   }
-
-
 
   async signToken(username: string): Promise<{ token: string }> {
     const jwtBody = {
@@ -106,7 +102,6 @@ export class AuthService {
       this.mailService.sendMail(from, to, subject,text)
   }
 
-
   async generatePasswordResetLink(email: string) : Promise<string>{
     const user = await this.prisma.user.findFirst({
       where:{
@@ -119,4 +114,27 @@ export class AuthService {
 
       return `${Constants.resetPassword.reselLinkBase}${token.token}`
   }
+
+  async resetPassword(user:User, dto: ResetPasswordDto) {
+    
+    if(dto.password !== dto.repeatedPassword)
+      throw new BadRequestException("Passwords do not match");
+
+    const hash = await argon.hash(dto.password+user.salt)
+
+    const updatedUser =  await this.prisma.user.update({
+      where:{
+        id:user.id
+      },
+      data: {
+        password:hash
+      }
+    }) 
+
+    return await this.signToken(user.username)
+
+  }
+
+
+
 }
