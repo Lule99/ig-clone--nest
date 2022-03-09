@@ -60,7 +60,6 @@ export class UserController {
     @Query('username') username: string,
     @Query('followedUsername') followedUsername: string,
   ) {
-    
     return this.profileService.followCheck(username, followedUsername);
   }
 
@@ -78,7 +77,6 @@ export class UserController {
     @GetProfile() profile: Profile,
     @Query('otherUsername') otherUsername: string,
   ) {
-    
     return this.profileService.follow(profile, otherUsername);
   }
 
@@ -89,6 +87,6 @@ export class UserController {
     @GetProfile() profile: Profile,
     @Query('otherUsername') otherUsername: string,
   ) {
-    this.profileService.unfollow(profile, otherUsername)
+    this.profileService.unfollow(profile, otherUsername);
   }
 }

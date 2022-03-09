@@ -1,11 +1,6 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Profile, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { domainToASCII } from 'url';
 import { ProfileInfoDto, UpdateUserDto } from './dto';
 
 @Injectable()
