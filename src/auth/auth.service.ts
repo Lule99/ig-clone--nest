@@ -37,7 +37,7 @@ export class AuthService {
               create: {
                 name:dto.name,
                 bio:dto.bio,
-                profilePiture:dto.profilePicture,
+                profilePicture:dto.profilePicture,
               }
           }
         },

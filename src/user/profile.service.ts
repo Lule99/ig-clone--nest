@@ -92,7 +92,7 @@ export class ProfileService {
       followersNumber: user.profile.followedBy.length,
       followingNumber: user.profile.following.length,
       name: user.profile.name,
-      picture: user.profile.profilePiture,
+      picture: user.profile.profilePicture,
       bio: user.profile.bio,
     };
 
@@ -116,7 +116,7 @@ export class ProfileService {
 
     return users.map((u) => ({
       username: u.username,
-      picture: u.profile.profilePiture,
+      picture: u.profile.profilePicture,
       name: u.profile.name,
     }));
   }
@@ -132,7 +132,7 @@ export class ProfileService {
           update: {
             name: dto.name,
             bio: dto.bio,
-            profilePiture: dto.picture,
+            profilePicture: dto.picture,
           },
         },
       },
