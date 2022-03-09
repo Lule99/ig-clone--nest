@@ -1,18 +1,22 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthDto, LoginDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { generateStringHash } from 'src/utils/generators';
+import { generateStringHash } from 'src/helpers/utils/generators';
+import { MailService } from 'src/helpers/mail/mail.service';
+import Constants from 'src/helpers/utils/constants';
 
 @Injectable()
 export class AuthService {
+
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async register(dto: AuthDto) {
@@ -85,5 +89,34 @@ export class AuthService {
     });
 
     return { token: token };
+  }
+
+  async initializePasswordReset(email: string) {
+    
+
+      const link = await this.generatePasswordResetLink(email);
+          //TODO ----------------- maknuti!!!!!!!!!!!!!!!!
+
+      email = 'lkureljusic@ymail.com';
+
+      const from= Constants.resetPassword.resetMailFrom
+      const to = email
+      const subject = Constants.resetPassword.resetMailSubject
+      const text = `${Constants.resetPassword.resetMailText}${link}`
+      this.mailService.sendMail(from, to, subject,text)
+  }
+
+
+  async generatePasswordResetLink(email: string) : Promise<string>{
+    const user = await this.prisma.user.findFirst({
+      where:{
+        email:email
+      }
+    })
+    if(! user)
+      throw new BadRequestException(`User with email: ${email} does not exist!`);
+      const token = await this.signToken(user.username)
+
+      return `${Constants.resetPassword.reselLinkBase}${token.token}`
   }
 }
