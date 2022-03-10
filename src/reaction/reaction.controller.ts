@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -28,7 +29,7 @@ export class ReactionController {
   }
 
   @Get('/my-comment-reaction/:id')
-  getMyCommentReaction(@GetProfile() profile: Profile, @Param('id') id: number) {
+  getMyCommentReaction(@GetProfile() profile: Profile, @Param('id', ParseIntPipe) id: number) {
     return this.reactionService.getMyCommentReaction(profile, id);
   }
 
@@ -39,7 +40,7 @@ export class ReactionController {
   }
 
   @Get('/my-post-reaction/:id')
-  getMyPostReaction(@GetProfile() profile: Profile, @Param('id') id: number) {
+  getMyPostReaction(@GetProfile() profile: Profile, @Param('id', ParseIntPipe) id: number) {
     return this.reactionService.getMyPostReaction(profile, id);
   }
 }
