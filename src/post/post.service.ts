@@ -118,14 +118,26 @@ export class PostService {
       .following();
     publishers.push(profile);
 
-    return await this.getPostsFromPublishers(publishers, page, size);
+    const rawPosts = await this.getPostsFromPublishers(publishers, page, size);
+    return rawPosts.map(p => {
+        const dto = {
+        id: p.id,
+        userProfilePicture: p.publisher.profilePicture,
+        text: p.text,
+        picture: p.picture,
+        username: p.publisher.user.username,
+        numOfReactions : p.reactions.length,
+        dateTime: p.createdAt
+        }
+        return dto;
+      })
   }
 
   async getPostsFromPublishers(
     publishers: Profile[],
     page: number,
     size: number,
-  ): Promise<Post[]> {
+  ){
     return await this.prisma.post.findMany({
       skip: page * size,
       take: size,
@@ -134,6 +146,14 @@ export class PostService {
         publisherId: {
           in: publishers.map((p) => p.id),
         },
+      },
+      include:{
+        publisher:{
+          include:{
+            user:true
+          }
+        },
+        reactions:true,
       },
       orderBy: {
         createdAt: 'desc',
