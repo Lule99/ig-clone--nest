@@ -6,7 +6,7 @@ const Constants = {
   base64: 'base64',
   client: 'http://localhost:3000',
   sockets: {
-    global: '/global',
+    global: 'global',
     chat: 'chat',
   },
   resetPassword: {

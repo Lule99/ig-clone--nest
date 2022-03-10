@@ -22,7 +22,6 @@ export class GlobalGateway {
 
   @SubscribeMessage('login')
   login(client: any, username: any) {
-    
     client.join(username);
   }
 
@@ -38,8 +37,8 @@ export class GlobalGateway {
     client.emit('redirectToRoom', room);
   }
 
-  generateRoom() {
-    const id = v4();
+  generateRoom(): string {
+    return v4();
   }
 
   async getUserFromUsername(username: string) {
