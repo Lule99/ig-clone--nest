@@ -120,7 +120,7 @@ export class PostService {
 
     const rawPosts = await this.getPostsFromPublishers(publishers, page, size);
     return rawPosts.map(p => {
-        const dto = {
+        return {
         id: p.id,
         userProfilePicture: p.publisher.profilePicture,
         text: p.text,
@@ -129,7 +129,6 @@ export class PostService {
         numOfReactions : p.reactions.length,
         dateTime: p.createdAt
         }
-        return dto;
       })
   }
 

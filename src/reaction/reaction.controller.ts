@@ -27,7 +27,7 @@ export class ReactionController {
     return 'addCommentReaction with id ' + dto.entityId;
   }
 
-  @Get('/:id')
+  @Get('/my-comment-reaction/:id')
   getMyCommentReaction(@GetProfile() profile: Profile, @Param('id') id: number) {
     return this.reactionService.getMyCommentReaction(profile, id);
   }
@@ -35,11 +35,10 @@ export class ReactionController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('toggle-post-reaction')
   togglePostReaction(@GetProfile() profile: Profile, @Body() dto: ReactionDto) {
-    this.reactionService.togglePostReaction(profile, dto)
-    return 'togglePostReaction with id ' + dto.entityId;
+    return this.reactionService.togglePostReaction(profile, dto);
   }
 
-  @Get('/:id')
+  @Get('/my-post-reaction/:id')
   getMyPostReaction(@GetProfile() profile: Profile, @Param('id') id: number) {
     return this.reactionService.getMyPostReaction(profile, id);
   }
