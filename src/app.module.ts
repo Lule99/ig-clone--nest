@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './helpers/mail/mail.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ChatModule } from './chat/chat.module';
 import Constants from './helpers/utils/constants';
 
 @Module({
@@ -42,6 +43,7 @@ import Constants from './helpers/utils/constants';
       serveRoot: Constants.staticContent.postServeRoot,
       exclude: [Constants.staticContent.exclude],
     }),
+    ChatModule,
   ],
   controllers: [],
   providers: [],

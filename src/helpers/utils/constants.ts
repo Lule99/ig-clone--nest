@@ -4,6 +4,11 @@ const Constants = {
   reset_jwt: 'reset_jwt',
   databaseUrl: 'DATABASE_URL',
   base64: 'base64',
+  client: 'http://localhost:3000',
+  sockets: {
+    global: 'global',
+    chat: 'chat',
+  },
   resetPassword: {
     resetMailSubject: 'RESET-PASSWORD',
     resetMailFrom: 'ig-clone <ig@clone.com>',
@@ -28,7 +33,7 @@ const Constants = {
     postServeRoot: '/data/posts/',
     usersServeRoot: '/data/users/',
   },
-  uploadLimitMB: '50mb'
+  uploadLimitMB: '50mb',
 };
 
 export default Constants;
