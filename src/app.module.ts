@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './helpers/mail/mail.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ChatGateway } from './chat/chat.gateway';
 
 
 @Module({
@@ -34,7 +35,7 @@ import { join } from 'path';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [ChatGateway],
 })
 
 export class AppModule { }
