@@ -1,4 +1,8 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { AuthDto, LoginDto, ResetPasswordDto } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
@@ -22,8 +26,8 @@ export class AuthService {
   async register(dto: AuthDto) {
     const salt = generateStringHash(8);
     const pswHash = await argon.hash(dto.password + salt);
-    
-    if(dto.password !== dto.repeatedPassword)
+
+    if (dto.password !== dto.repeatedPassword)
       throw new ForbiddenException(`Password1 and Password2 dont match.`);
 
     try {
@@ -34,29 +38,26 @@ export class AuthService {
           salt: salt,
           email: dto.email,
           profile: {
-              create: {
-                name:dto.name,
-                bio:dto.bio,
-                profilePicture:dto.profilePicture,
-              }
-          }
+            create: {
+              name: dto.name,
+              bio: dto.bio,
+              profilePicture: dto.profilePicture,
+            },
+          },
         },
       });
 
-      return this.signToken(user.username);
-
+      return this.signToken(user.username, 365);
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === 'P2002') {
-          //P2002 duplicate field
-          //console.log(JSON.stringify(err));
           const info: any = err.meta;
           throw new ForbiddenException(`${info.target} already taken!`);
         }
       }
     }
   }
- 
+
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -71,70 +72,62 @@ export class AuthService {
     const passwordCheck = await argon.verify(user.password, password + salt);
 
     if (!passwordCheck) throw new ForbiddenException('Invalid credentials!');
-    return await this.signToken(user.username);
+    return await this.signToken(user.username, 365);
   }
 
-  async signToken(username: string): Promise<{ token: string }> {
+  async signToken(
+    username: string,
+    expiresInDays: number,
+  ): Promise<{ token: string }> {
     const jwtBody = {
       sub: username,
     };
-
     const token = await this.jwt.signAsync(jwtBody, {
-      expiresIn: '365d',
-      secret: this.config.get('JWT_SECRET'),
+      expiresIn: `${expiresInDays}d`,
+      secret: this.config.get(Constants.jwtSecret),
     });
 
     return { token: token };
   }
 
   async initializePasswordReset(email: string) {
-    
-
-      const link = await this.generatePasswordResetLink(email);
-          //TODO ----------------- maknuti!!!!!!!!!!!!!!!!
-
-      email = 'lkureljusic@ymail.com';
-
-      const from= Constants.resetPassword.resetMailFrom
-      const to = email
-      const subject = Constants.resetPassword.resetMailSubject
-      const text = `${Constants.resetPassword.resetMailText}${link}`
-      this.mailService.sendMail(from, to, subject,text)
+    const link = await this.generatePasswordResetLink(email);
+    const from = Constants.resetPassword.resetMailFrom;
+    const to = email;
+    const subject = Constants.resetPassword.resetMailSubject;
+    const text = `${Constants.resetPassword.resetMailText}${link}`;
+    this.mailService.sendMail(from, to, subject, text);
   }
 
-  async generatePasswordResetLink(email: string) : Promise<string>{
+  async generatePasswordResetLink(email: string): Promise<string> {
     const user = await this.prisma.user.findFirst({
-      where:{
-        email:email
-      }
-    })
-    if(! user)
-      throw new BadRequestException(`User with email: ${email} does not exist!`);
-      const token = await this.signToken(user.username)
+      where: {
+        email: email,
+      },
+    });
+    if (!user)
+      throw new BadRequestException(
+        `User with email: ${email} does not exist!`,
+      );
+    const token = await this.signToken(user.username, 1);
 
-      return `${Constants.resetPassword.reselLinkBase}${token.token}`
+    return `${Constants.resetPassword.reselLinkBase}${token.token}`;
   }
 
-  async resetPassword(user:User, dto: ResetPasswordDto) {
-    
-    if(dto.password !== dto.repeatedPassword)
-      throw new BadRequestException("Passwords do not match");
+  async resetPassword(user: User, dto: ResetPasswordDto) {
+    if (dto.password !== dto.repeatedPassword)
+      throw new BadRequestException('Passwords do not match');
 
-    const hash = await argon.hash(dto.password+user.salt)
-
-    const updatedUser =  await this.prisma.user.update({
-      where:{
-        id:user.id
+    const hash = await argon.hash(dto.password + user.salt);
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
       },
       data: {
-        password:hash
-      }
-    }) 
+        password: hash,
+      },
+    });
 
-    return await this.signToken(user.username)
-
+    return await this.signToken(user.username, 1);
   }
-
-
-
 }

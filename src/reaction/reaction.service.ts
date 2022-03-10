@@ -13,7 +13,6 @@ export class ReactionService {
         profileId: profile.id,
         postId: dto.entityId,
         kind: ReactionKind.POST_REACTION,
-        type: dto.reactionType,
       },
     });
 
@@ -115,7 +114,7 @@ export class ReactionService {
         },
       },
     });
-    return this.dumpToDto(reaction, true);
+    return this.dumpToDto(reaction, false);
   }
 
   async addCommentReaction(
@@ -140,7 +139,7 @@ export class ReactionService {
         },
       },
     });
-    return this.dumpToDto(reaction, true);
+    return this.dumpToDto(reaction, false);
   }
 
   async removeReaction(id: number) {
@@ -149,7 +148,7 @@ export class ReactionService {
         id: id,
       },
     });
-    return this.dumpToDto(reaction, true);
+    return this.dumpToDto(reaction, false);
   }
 
   async toggleReaction(id: number, type: ReactionType) {
@@ -168,7 +167,7 @@ export class ReactionService {
   dumpToDto(reaction: Reaction, update: boolean) {
     return {
       reactionType: reaction.type,
-      update: update
-    }
+      update: update,
+    };
   }
 }

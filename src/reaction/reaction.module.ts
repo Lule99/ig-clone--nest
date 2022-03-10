@@ -6,6 +6,5 @@ import { ReactionService } from './reaction.service';
   controllers: [ReactionController],
   providers: [ReactionService],
   exports: [ReactionService],
-  
 })
 export class ReactionModule {}

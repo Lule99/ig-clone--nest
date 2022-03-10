@@ -18,7 +18,7 @@ export const checkIfFileExists = (path: string): boolean => {
 export const generatePostPath = (): string => {
   for (let i = 0; i < 1000; i++) {
     let hash = generateStringHash(15);
-    let path = Constants.postPicturePath + `${hash}.jpg`;
+    let path = Constants.staticContent.postPicturePath + `${hash}.jpg`;
     if (!checkIfFileExists(path)) return path;
   }
   throw new ServiceUnavailableException('Error generating image path...');
@@ -27,7 +27,7 @@ export const generatePostPath = (): string => {
 export const generateProfilePicturePath = (): string => {
   for (let i = 0; i < 1000; i++) {
     let hash = generateStringHash(15);
-    let path = Constants.userPicturePath + `${hash}.jpg`;
+    let path = Constants.staticContent.userPicturePath + `${hash}.jpg`;
     if (!checkIfFileExists(path)) return path;
   }
   throw new ServiceUnavailableException('Error generating image path...');
