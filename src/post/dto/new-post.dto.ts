@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class NewPostDto {
   @IsNotEmpty()
   @IsString()
-  message: string;
+  text: string;
   @IsNotEmpty()
   @IsString()
   picture: string;

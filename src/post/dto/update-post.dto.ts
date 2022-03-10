@@ -7,7 +7,7 @@ export class UpdatePostDto {
   postToUpdateId: number;
   @IsNotEmpty()
   @IsString()
-  message: string;
+  text: string;
   @IsNotEmpty()
   @IsString()
   picture: string;

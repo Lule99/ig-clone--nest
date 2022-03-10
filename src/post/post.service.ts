@@ -21,7 +21,7 @@ export class PostService {
                 id: dto.postToUpdateId,
               },
               data: {
-                text: dto.message,
+                text: dto.text,
                 picture: dto.picture,
               },
             },
@@ -36,7 +36,7 @@ export class PostService {
   async publishPost(profile: Profile, dto: NewPostDto) {
     return await this.prisma.post.create({
       data: {
-        text: dto.message,
+        text: dto.text,
         picture: dto.picture,
         publisher: {
           connect: {
