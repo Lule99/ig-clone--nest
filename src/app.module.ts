@@ -43,7 +43,6 @@ import Constants from './helpers/utils/constants';
       serveRoot: Constants.staticContent.postServeRoot,
       exclude: [Constants.staticContent.exclude],
     }),
-    CharModule,
     ChatModule,
   ],
   controllers: [],
