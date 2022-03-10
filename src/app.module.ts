@@ -29,7 +29,7 @@ import Constants from './helpers/utils/constants';
         Constants.staticContent.mainDir,
         Constants.staticContent.users,
       ),
-      serveRoot: Constants.staticContent.userPicturePath,
+      serveRoot: Constants.staticContent.usersServeRoot,
       exclude: [Constants.staticContent.exclude],
     }),
     ServeStaticModule.forRoot({
@@ -39,7 +39,7 @@ import Constants from './helpers/utils/constants';
         Constants.staticContent.mainDir,
         Constants.staticContent.posts,
       ),
-      serveRoot: Constants.staticContent.postPicturePath,
+      serveRoot: Constants.staticContent.postServeRoot,
       exclude: [Constants.staticContent.exclude],
     }),
   ],

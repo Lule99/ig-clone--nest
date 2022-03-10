@@ -25,7 +25,10 @@ const Constants = {
     posts: 'posts',
     users: 'users',
     exclude: '/api*',
+    postServeRoot: '/data/posts/',
+    usersServeRoot: '/data/users/',
   },
+  uploadLimitMB: '50mb'
 };
 
 export default Constants;

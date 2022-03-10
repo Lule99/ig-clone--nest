@@ -18,7 +18,7 @@ export class ProfileService {
 
     if (!followerProfile) throw new BadRequestException('Profile not found');
 
-    return !!this.checkIfFollows(followerProfile, followedUsername);
+    return this.checkIfFollows(followerProfile, followedUsername);
   }
 
   async unfollow(profile: Profile, otherUsername: string) {
@@ -140,27 +140,22 @@ export class ProfileService {
   }
 
   async checkIfFollows(profile: Profile, followedUsername: string) {
-    const followed: Profile = await this.getProfileByUsername(followedUsername);
-
-    const followedProfile = await this.prisma.user
-      .findFirst({
-        where: {
-          username: followedUsername,
-          AND: [
-            {
-              profile: {
-                followedBy: {
-                  some: {
-                    id: followed.id,
-                  },
-                },
-              },
-            },
-          ],
-        },
-      })
-      .profile();
-
+    
+    const followedProfile = await this.prisma.user.findFirst({
+      where:{
+        AND:[{
+          username:followedUsername
+        },{
+          profile:{
+            followedBy:{
+              some:{
+                id:profile.id
+              }
+            }
+          }
+        }]
+      }
+    })
     return !!followedProfile;
   }
 
