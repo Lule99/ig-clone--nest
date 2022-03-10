@@ -9,7 +9,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, Constants.simple_jwt) {
   constructor(config: ConfigService, private prisma: PrismaService) {
-    /* console.log("***********\n"+ExtractJwt.fromUrlQueryParameter("token")) */
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -23,7 +22,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, Constants.simple_jwt
         username: payload.sub,
       },
     }).profile();
-
 
     if (profile) return profile;
 

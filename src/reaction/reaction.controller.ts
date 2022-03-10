@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -13,7 +12,7 @@ import {
 import { Profile } from '@prisma/client';
 import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
-import { ReactionDto, RemoveReactionDto } from './dto';
+import { ReactionDto } from './dto';
 import { ReactionService } from './reaction.service';
 
 @Controller('api/reaction')

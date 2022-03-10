@@ -168,7 +168,7 @@ export class ReactionService {
   dumpToDto(reaction: Reaction, update: boolean) {
     return {
       reactionType: reaction.type,
-      update: update
-    }
+      update: update,
+    };
   }
 }

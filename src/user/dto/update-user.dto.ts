@@ -12,7 +12,7 @@ export class UpdateUserDto {
     @IsString()
     bio: string;
     @IsNotEmpty()
-    @IsString()     //TODO ?
+    @IsBase64()
     picture: string;
 
 }
