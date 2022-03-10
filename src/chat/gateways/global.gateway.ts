@@ -22,6 +22,7 @@ export class GlobalGateway {
 
   @SubscribeMessage('login')
   login(client: any, username: any) {
+    
     client.join(username);
   }
 
@@ -31,7 +32,7 @@ export class GlobalGateway {
     const caller = msg.caller;
 
     msg.usernames.map((user) => {
-      this.server.to(user).emit('call', { caller, room });
+      this.server.to(user).emit('callPending', { caller, room });
     });
 
     client.emit('redirectToRoom', room);
