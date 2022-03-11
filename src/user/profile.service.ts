@@ -45,7 +45,8 @@ export class ProfileService {
   }
 
   async follow(profile: Profile, followedUsername: string) {
-    if (this.checkIfFollows(profile, followedUsername))
+
+    if (await this.checkIfFollows(profile, followedUsername))
       throw new BadRequestException('User already follows');
 
     const followed = await this.prisma.user
@@ -156,6 +157,7 @@ export class ProfileService {
         }]
       }
     })
+
     return !!followedProfile;
   }
 
