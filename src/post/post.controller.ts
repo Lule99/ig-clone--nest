@@ -6,12 +6,13 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { Profile, User } from '@prisma/client';
+import { Profile } from '@prisma/client';
 import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { NewPostDto } from './dto';
@@ -27,42 +28,50 @@ export class PostController {
   @Get('feed')
   getFeed(
     @GetProfile() profile: Profile,
-    @Query('page') page: number,
-    @Query('size') size: number) {
-    
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+  ) {
     return this.postService.getFeed(profile, page, size);
   }
 
   @Get('user-posts')
   getUserPosts(
     @Query('username') username: string,
-    @Query('page') page: number,
-    @Query('size') size: number,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
   ) {
     return this.postService.getUserPosts(username, page, size);
   }
 
   @Get('/:id')
-  getOnePost(@Param('id') id: number) {
+  getOnePost(@Param('id', ParseIntPipe) id: number) {
     return this.postService.getOnePost(id);
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.ACCEPTED)
-  deletePost(@GetProfile() profile: Profile, @Param('id') id: number) {
+  deletePost(
+    @GetProfile() profile: Profile,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     return this.postService.deletePost(profile, id);
   }
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  publishPost(@GetProfile() profile: Profile, @Body(ProcessPostImagePipe) dto: NewPostDto) {
-    console.trace(dto)
+  publishPost(
+    @GetProfile() profile: Profile,
+    @Body(ProcessPostImagePipe) dto: NewPostDto,
+  ) {
     return this.postService.publishPost(profile, dto);
   }
 
   @Put('')
   @HttpCode(HttpStatus.ACCEPTED)
-  updatePost(@GetProfile() profile: Profile, @Body(ProcessPostImagePipe) dto: UpdatePostDto) {
+  updatePost(
+    @GetProfile() profile: Profile,
+    @Body(ProcessPostImagePipe) dto: UpdatePostDto,
+  ) {
     return this.postService.updatePost(profile, dto);
   }
 }

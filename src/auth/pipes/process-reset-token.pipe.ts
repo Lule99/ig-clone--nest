@@ -4,14 +4,13 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import jwtDecode from 'jwt-decode';
 import { User } from '@prisma/client';
 
 @Injectable()
 export class ProcessResetTokenPipe implements PipeTransform {
-  constructor(config: ConfigService, private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   async transform(token: any, metadata: ArgumentMetadata) {
     const payload: { sub: string; iat: number; exp: number } = jwtDecode(token);
@@ -20,14 +19,14 @@ export class ProcessResetTokenPipe implements PipeTransform {
       throw new BadRequestException(
         'Token Expired. Please request a new password-reset token.',
       );
-    
-    var user : User = await this.prisma.user.findUnique({
-        where: {
-          username: payload.sub,
-        },
-      })
-     
-    return user? user: null;
+
+    var user: User = await this.prisma.user.findUnique({
+      where: {
+        username: payload.sub,
+      },
+    });
+
+    return user ? user : null;
   }
 
   isExpired(numericDate: number): boolean {

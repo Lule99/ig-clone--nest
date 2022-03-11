@@ -12,23 +12,13 @@ import {
 import { Profile, User } from '@prisma/client';
 import { GetProfile } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
-import { ChangePasswordDto, UpdateUserDto } from './dto';
+import { UpdateUserDto } from './dto';
 import { ProfileService } from './profile.service';
-import { UserService } from './user.service';
 
 @Controller('api/user')
+@UseGuards(JwtGuard)
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private profileService: ProfileService,
-  ) {}
-
-  @Post('change-password')
-  @HttpCode(HttpStatus.ACCEPTED)
-  @UseGuards(JwtGuard)
-  changePassword(@GetProfile() user: User, @Body() dto: ChangePasswordDto) {
-    return 'changePassword';
-  }
+  constructor(private profileService: ProfileService) {}
 
   @Get()
   searchUser(@Query('query') query: string) {
@@ -36,13 +26,11 @@ export class UserController {
   }
 
   @Get('profile-info')
-  @UseGuards(JwtGuard)
   getProfileInfo(@Query('username') username: string) {
     return this.profileService.getProfileInfo(username);
   }
 
   @Get('follow-check')
-  @UseGuards(JwtGuard)
   checkIfUserFollowsUser(
     @Query('username') username: string,
     @Query('followedUsername') followedUsername: string,
@@ -52,14 +40,12 @@ export class UserController {
 
   @Put()
   @HttpCode(HttpStatus.ACCEPTED)
-  @UseGuards(JwtGuard)
   updateUser(@GetProfile() user: User, @Body() dto: UpdateUserDto) {
     return this.profileService.updateUser(user, dto);
   }
 
   @Post('follow')
   @HttpCode(HttpStatus.ACCEPTED)
-  @UseGuards(JwtGuard)
   followUser(
     @GetProfile() profile: Profile,
     @Query('otherUsername') otherUsername: string,
@@ -69,7 +55,6 @@ export class UserController {
 
   @Post('unfollow')
   @HttpCode(HttpStatus.ACCEPTED)
-  @UseGuards(JwtGuard)
   unfollowUser(
     @GetProfile() profile: Profile,
     @Query('otherUsername') otherUsername: string,

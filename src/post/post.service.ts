@@ -1,5 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { Post, Profile, User } from '@prisma/client';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
+import { Profile } from '@prisma/client';
 import { NewCommentDto } from 'src/comment/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NewPostDto, UpdatePostDto } from './dto';
@@ -9,23 +13,19 @@ export class PostService {
   constructor(private prisma: PrismaService) {}
 
   async updatePost(profile: Profile, dto: UpdatePostDto) {
+    if (!(await this.profileIsOwner(profile, dto.postToUpdateId)))
+      throw new ForbiddenException(
+        `User ${profile.name} is not the owner of the post!`,
+      );
+
     try {
-      await this.prisma.profile.update({
+      await this.prisma.post.update({
         where: {
-          id: profile.id,
+          id: dto.postToUpdateId,
         },
         data: {
-          posts: {
-            update: {
-              where: {
-                id: dto.postToUpdateId,
-              },
-              data: {
-                text: dto.message,
-                picture: dto.picture,
-              },
-            },
-          },
+          text: dto.text,
+          picture: dto.picture,
         },
       });
     } catch (err) {
@@ -36,7 +36,7 @@ export class PostService {
   async publishPost(profile: Profile, dto: NewPostDto) {
     return await this.prisma.post.create({
       data: {
-        text: dto.message,
+        text: dto.text,
         picture: dto.picture,
         publisher: {
           connect: {
@@ -49,22 +49,13 @@ export class PostService {
 
   async deletePost(profile: Profile, id: number) {
     try {
-      await this.prisma.profile.update({
-        where: {
-          id: profile.id,
-        },
-        data: {
-          posts: {
-            update: {
-              where: {
-                id: id,
-              },
-              data: {
-                active: false,
-              },
-            },
-          },
-        },
+      await this.prisma.post.update({
+       where:{
+         id:id
+       },
+       data:{
+         active:false
+       }
       });
     } catch (err) {
       throw new BadRequestException('No post with this id');
@@ -72,7 +63,6 @@ export class PostService {
   }
 
   async getOnePost(id: number) {
-    id = Number(id);
     const post = await this.prisma.post.findFirst({
       where: {
         AND: [
@@ -96,19 +86,11 @@ export class PostService {
   }
 
   async getUserPosts(username: string, page: number, size: number) {
-    page = Number(page);
-    size = Number(size);
-
-    console.log(page + ' ' + size);
-
     const profile: Profile = await this.getProfileFromUsername(username);
     return this.getPostsFromPublishers([profile], page, size);
   }
 
   async getFeed(profile: Profile, page: number, size: number) {
-    page = Number(page);
-    size = Number(size);
-
     const publishers: Profile[] = await this.prisma.profile
       .findFirst({
         where: {
@@ -118,14 +100,25 @@ export class PostService {
       .following();
     publishers.push(profile);
 
-    return await this.getPostsFromPublishers(publishers, page, size);
+    const rawPosts = await this.getPostsFromPublishers(publishers, page, size);
+    return rawPosts.map((p) => {
+      return {
+        id: p.id,
+        userProfilePicture: p.publisher.profilePicture,
+        text: p.text,
+        picture: p.picture,
+        username: p.publisher.user.username,
+        numOfReactions: p.reactions.length,
+        dateTime: p.createdAt,
+      };
+    });
   }
 
   async getPostsFromPublishers(
     publishers: Profile[],
     page: number,
     size: number,
-  ): Promise<Post[]> {
+  ) {
     return await this.prisma.post.findMany({
       skip: page * size,
       take: size,
@@ -134,6 +127,14 @@ export class PostService {
         publisherId: {
           in: publishers.map((p) => p.id),
         },
+      },
+      include: {
+        publisher: {
+          include: {
+            user: true,
+          },
+        },
+        reactions: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -156,44 +157,60 @@ export class PostService {
   }
 
   async publishComment(profile: Profile, dto: NewCommentDto) {
-    
-    if(!this.profileAllowedToSee(profile, dto.commentedEntityId))
-        throw new ForbiddenException("Not allowed to publish! You dont follow this.")
+    if (!this.profileAllowedToSee(profile, dto.commentedEntityId))
+      throw new ForbiddenException(
+        'Not allowed to publish! You dont follow this.',
+      );
 
     return await this.prisma.comment.create({
-      data:{
-        commentText:dto.text,
+      data: {
+        commentText: dto.text,
         post: {
-          connect:{
-            id: dto.commentedEntityId
-          }
+          connect: {
+            id: dto.commentedEntityId,
+          },
         },
-        profile:{
-          connect:{
-            id: profile.id
-          }
-        }
-      }
-    })
+        profile: {
+          connect: {
+            id: profile.id,
+          },
+        },
+      },
+    });
   }
 
   async profileAllowedToSee(profile: Profile, id: number) {
-    const followingList : Profile[] = await this.prisma.profile.findFirst({
-      where:{
-        id:profile.id
-      },
-    }).following()
+    const followingList: Profile[] = await this.prisma.profile
+      .findFirst({
+        where: {
+          id: profile.id,
+        },
+      })
+      .following();
 
-    return !! await this.prisma.post.findFirst({
-      where:{
-        AND:[{
-          id: id
-        },{
-          publisherId: {
-            in: followingList.map(p => p.id)
-          }
-        }]
-      }
-    })
+    return !!(await this.prisma.post.findFirst({
+      where: {
+        AND: [
+          {
+            id: id,
+          },
+          {
+            publisherId: {
+              in: followingList.map((p) => p.id),
+            },
+          },
+        ],
+      },
+    }));
+  }
+
+  async profileIsOwner(profile: Profile, id: number) {
+    const post = await this.prisma.post.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    return post ? profile.id === post.publisherId : false;
   }
 }

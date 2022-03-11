@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import {ConfigModule } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config';
 
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -8,7 +8,10 @@ import { ReactionModule } from './reaction/reaction.module';
 import { CommentModule } from './comment/comment.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './helpers/mail/mail.module';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { ChatModule } from './chat/chat.module';
+import Constants from './helpers/utils/constants';
 
 @Module({
   imports: [
@@ -19,9 +22,30 @@ import { MailModule } from './helpers/mail/mail.module';
     CommentModule,
     PrismaModule,
     MailModule,
-    ConfigModule.forRoot({isGlobal:true}),
+    ConfigModule.forRoot({ isGlobal: true }),
+    ServeStaticModule.forRoot({
+      rootPath: join(
+        __dirname,
+        '..',
+        Constants.staticContent.mainDir,
+        Constants.staticContent.users,
+      ),
+      serveRoot: Constants.staticContent.usersServeRoot,
+      exclude: [Constants.staticContent.exclude],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(
+        __dirname,
+        '..',
+        Constants.staticContent.mainDir,
+        Constants.staticContent.posts,
+      ),
+      serveRoot: Constants.staticContent.postServeRoot,
+      exclude: [Constants.staticContent.exclude],
+    }),
+    ChatModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -18,7 +18,7 @@ export class ProfileService {
 
     if (!followerProfile) throw new BadRequestException('Profile not found');
 
-    return !!this.checkIfFollows(followerProfile, followedUsername);
+    return this.checkIfFollows(followerProfile, followedUsername);
   }
 
   async unfollow(profile: Profile, otherUsername: string) {
@@ -45,7 +45,8 @@ export class ProfileService {
   }
 
   async follow(profile: Profile, followedUsername: string) {
-    if (this.checkIfFollows(profile, followedUsername))
+
+    if (await this.checkIfFollows(profile, followedUsername))
       throw new BadRequestException('User already follows');
 
     const followed = await this.prisma.user
@@ -92,7 +93,7 @@ export class ProfileService {
       followersNumber: user.profile.followedBy.length,
       followingNumber: user.profile.following.length,
       name: user.profile.name,
-      picture: user.profile.profilePiture,
+      picture: user.profile.profilePicture,
       bio: user.profile.bio,
     };
 
@@ -116,7 +117,7 @@ export class ProfileService {
 
     return users.map((u) => ({
       username: u.username,
-      picture: u.profile.profilePiture,
+      picture: u.profile.profilePicture,
       name: u.profile.name,
     }));
   }
@@ -132,7 +133,7 @@ export class ProfileService {
           update: {
             name: dto.name,
             bio: dto.bio,
-            profilePiture: dto.picture,
+            profilePicture: dto.picture,
           },
         },
       },
@@ -140,26 +141,22 @@ export class ProfileService {
   }
 
   async checkIfFollows(profile: Profile, followedUsername: string) {
-    const followed: Profile = await this.getProfileByUsername(followedUsername);
-
-    const followedProfile = await this.prisma.user
-      .findFirst({
-        where: {
-          username: followedUsername,
-          AND: [
-            {
-              profile: {
-                followedBy: {
-                  some: {
-                    id: followed.id,
-                  },
-                },
-              },
-            },
-          ],
-        },
-      })
-      .profile();
+    
+    const followedProfile = await this.prisma.user.findFirst({
+      where:{
+        AND:[{
+          username:followedUsername
+        },{
+          profile:{
+            followedBy:{
+              some:{
+                id:profile.id
+              }
+            }
+          }
+        }]
+      }
+    })
 
     return !!followedProfile;
   }
