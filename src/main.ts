@@ -10,9 +10,7 @@ async function bootstrap() {
   });
 
   app.use(bodyParser.json({ limit: Constants.uploadLimitMB }));
-  app.use(
-    bodyParser.urlencoded({ limit: Constants.uploadLimitMB, extended: true }),
-  );
+  app.use(bodyParser.urlencoded({ limit: Constants.uploadLimitMB, extended: true }));
 
   app.useGlobalPipes(
     new ValidationPipe({

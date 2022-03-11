@@ -1,6 +1,7 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { generatePostPath } from 'src/helpers/utils/generators';
+import { generatePostPath, makeDirIfNotExists } from 'src/helpers/utils/generators';
 import { writeFile } from 'fs'
+import Constants from 'src/helpers/utils/constants';
 
 @Injectable()
 export class ProcessPostImagePipe implements PipeTransform {
@@ -11,7 +12,7 @@ export class ProcessPostImagePipe implements PipeTransform {
     
     const imageData = picture.split(',')[1]
     const path = generatePostPath();
-
+    makeDirIfNotExists(Constants.staticContent.postPicturePath)
     writeFile(path, imageData, 'base64', function(err) {
       console.log(err);
     })

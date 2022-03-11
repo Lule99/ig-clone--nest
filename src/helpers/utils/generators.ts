@@ -1,6 +1,6 @@
 import { ServiceUnavailableException } from '@nestjs/common';
 import Constants from 'src/helpers/utils/constants';
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 
 export const generateStringHash = (n: number) => {
   let res = '';
@@ -32,3 +32,13 @@ export const generateProfilePicturePath = (): string => {
   }
   throw new ServiceUnavailableException('Error generating image path...');
 };
+
+export const makeDirIfNotExists = (dir: string): void => {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+};
+
+export const rnd = (min: number, max: number) : number => { 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}

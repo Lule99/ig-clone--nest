@@ -63,7 +63,6 @@ export class PostController {
     @GetProfile() profile: Profile,
     @Body(ProcessPostImagePipe) dto: NewPostDto,
   ) {
-    console.trace(dto);
     return this.postService.publishPost(profile, dto);
   }
 
