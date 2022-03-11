@@ -28,7 +28,5 @@ export class AuthDto {
   @IsString()
   bio: string;
 
-  @IsNotEmpty()
-  @IsString()
   profilePicture: string;
 }

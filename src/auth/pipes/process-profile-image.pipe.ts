@@ -1,18 +1,23 @@
 import {
   ArgumentMetadata,
-  BadRequestException,
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
 import { writeFile } from 'fs';
-import { generateProfilePicturePath } from 'src/helpers/utils/generators';
+import { generateProfilePicturePath, makeDirIfNotExists, rnd } from 'src/helpers/utils';
+import Constants from 'src/helpers/utils/constants';
 
 
 @Injectable()
 export class ProcessProfileImagePipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
     const picture = value.profilePicture;
-    if (!picture) throw new BadRequestException('No image recieved');
+    makeDirIfNotExists(Constants.staticContent.userPicturePath)
+
+    if (!picture){
+      value.profilePicture = `data/users/npc${rnd(1,3)}.jpg`
+      return value;
+    };
 
     const imageData = picture.split(',')[1];
     const path = generateProfilePicturePath();
